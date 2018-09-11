@@ -13,6 +13,17 @@ class Hesh
   end
 
   class << self
+    # Creates a Hash of something, I'm not sure what, you tell me!
+    #
+    # @param &fn [Proc]
+    #   Function for default value of the hash, yielding the hash and
+    #   key if ya need them
+    #
+    # @return [Hash[Any, Any]]
+    def of(&fn)
+      Hash.new { |h, k| h[k] = fn.call(h, k) }
+    end
+
     # Creates a Hash of arrays
     #
     # @return [Hash[Any, Array]]

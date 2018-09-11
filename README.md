@@ -7,6 +7,9 @@ Hesh makes Hashes. That's it for now. I may come up with something more clever l
 Run down of the functions:
 
 ```ruby
+# Makes a new Hash with a function used to determine the default value
+Hesh.of { [] } # == Hash.new { |h,k| h[k] = fn.call(h, k) }
+
 # Makes a new Hash with default values of a new array
 Hesh.of_array # == Hash.new { |h,k| h[k] = [] }
 

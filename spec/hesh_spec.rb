@@ -4,6 +4,15 @@ RSpec.describe Hesh do
   end
 
   describe 'self' do
+    describe '.of' do
+      it 'creates a Hash of something, ya tell me!' do
+        hash = Hesh.of { [] }
+        hash[:a] << 1
+
+        expect(hash[:a]).to eq([1])
+      end
+    end
+
     describe '.of_array' do
       it 'creates a Hash of arrays' do
         hash = Hesh.of_array
