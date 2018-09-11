@@ -5,6 +5,9 @@ class Hesh
   # you happen to give it!
   IDENTITY_FN = -> v { v }
 
+  # We prefer the new and shiny here, yes we do.
+  PREFER_NEW_FN = -> k, o, n { n }
+
   def initialize
     raise 'Why no no no, hesh is not to be made! Not yet!'
   end
@@ -62,6 +65,61 @@ class Hesh
       hash.each_with_object(Hesh.of_array) { |(k, vs), h|
         vs.each { |v| h[v] << k }
       }
+    end
+
+    # Merges a series of hashes and sums their values
+    #
+    # @param *hashes [Array[Hash]]
+    #   Collection of hashes
+    #
+    # @return [Hash[Any, Integer]]
+    #   Summed hash
+    def merge_sum(*hashes)
+      hashes.reduce(Hash.new(0), &merges { |k, o, n| o + n })
+    end
+
+    # Merges a series of hashes and joins their values
+    #
+    # @param *hashes [Array[Hash]]
+    #   Collection of hashes
+    #
+    # @return [Hash[Any, Array]]
+    #   Joined hash
+    def merge_join(*hashes)
+      hashes.reduce(Hesh.of_array, &merges { |k, o, n| o + n })
+    end
+
+    # Merges a series of hashes with a function
+    #
+    # @param *hashes [Array[Hash]]
+    #   Collection of hashes
+    #
+    # @return [Hash[Any, Any]]
+    #   Merged hash
+    def merge_with(*hashes, &fn)
+      hashes.reduce({}, &merges(&fn))
+    end
+
+    # Merges a series of hashes infintely deep with a function
+    #
+    # @param *hashes [Array[Hash]]
+    #   Collection of hashes
+    #
+    # @param &fn [Proc]
+    #   Function for joining values, defaults to preferring newest value
+    #
+    # @return [Hash[Any, Any]]
+    #   Joined hash
+    def merge_deep(*hashes, &fn)
+      fn ||= PREFER_NEW_FN
+
+      hashes.reduce({}, &merges { |k, o, n|
+        o.is_a?(Hash) ? merge_deep(o, n, &fn) : fn[k, o, n]
+      })
+    end
+
+    private def merges(&fn)
+      -> a, b { a.merge(b, &fn) }
     end
   end
 end

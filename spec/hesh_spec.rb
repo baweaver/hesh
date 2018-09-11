@@ -45,5 +45,38 @@ RSpec.describe Hesh do
         })
       end
     end
+
+    describe '.merge_sum' do
+      it 'merges and sums together values' do
+        expect(Hesh.merge_sum({a: 1}, {a: 2}, {a: 3})).to eq({:a=>6})
+      end
+    end
+
+    describe '.merge_join' do
+      it 'merges and joins together arrays' do
+        expect(Hesh.merge_join({a: [1,2,3]}, {a: [4]})).to eq({:a=>[1, 2, 3, 4]})
+      end
+    end
+
+    describe '.merge_with' do
+      it 'merges with a function' do
+        expect(
+          Hesh.merge_with({a: [1,2,3]}, {a: [1,4]}) { |k, o, n| o - n }
+        ).to eq({:a=>[2, 3]})
+      end
+    end
+
+    describe '.merge_deep' do
+      it 'merges deep!' do
+        a = {a: {b: {c: 1, d: 2}}}
+        b = {a: {b: {c: 4, d: 3}, x: 4}}
+
+        expect(
+          Hesh.merge_deep(a, b) { |k,o,n| o + n }
+        ).to eq({
+          :a=>{:b=>{:c=>5, :d=>5}, :x=>4}
+        })
+      end
+    end
   end
 end
